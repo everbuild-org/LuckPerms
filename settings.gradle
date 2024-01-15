@@ -31,6 +31,8 @@ include (
         'forge',
         'forge:loader',
         'forge:forge-api',
+        'minestom',
+        'minestom:loader',
         'nukkit',
         'nukkit:loader',
         'sponge',

@@ -1,0 +1,47 @@
+plugins {
+    alias(libs.plugins.shadow)
+    id("java-library")
+}
+
+// minestom requires java 17+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io/' }
+}
+
+dependencies {
+    api project(":common")
+    compileOnlyApi project(":common:loader-utils")
+
+    compileOnlyApi("dev.hollowcube:minestom-ce-snapshots:1_20_4-12eb5c26b0")
+}
+
+shadowJar {
+    archiveFileName = "luckperms-minestom.jarinjar"
+
+    dependencies {
+        include(dependency('me.lucko.luckperms:.*'))
+    }
+
+    relocate 'net.kyori.adventure', 'me.lucko.luckperms.lib.adventure'
+    relocate 'net.kyori.event', 'me.lucko.luckperms.lib.eventbus'
+    relocate 'com.github.benmanes.caffeine', 'me.lucko.luckperms.lib.caffeine'
+    relocate 'okio', 'me.lucko.luckperms.lib.okio'
+    relocate 'okhttp3', 'me.lucko.luckperms.lib.okhttp3'
+    relocate 'net.bytebuddy', 'me.lucko.luckperms.lib.bytebuddy'
+    relocate 'me.lucko.commodore', 'me.lucko.luckperms.lib.commodore'
+    relocate 'org.mariadb.jdbc', 'me.lucko.luckperms.lib.mariadb'
+    relocate 'com.mysql', 'me.lucko.luckperms.lib.mysql'
+    relocate 'org.postgresql', 'me.lucko.luckperms.lib.postgresql'
+    relocate 'com.zaxxer.hikari', 'me.lucko.luckperms.lib.hikari'
+    relocate 'com.mongodb', 'me.lucko.luckperms.lib.mongodb'
+    relocate 'org.bson', 'me.lucko.luckperms.lib.bson'
+    relocate 'redis.clients.jedis', 'me.lucko.luckperms.lib.jedis'
+    relocate 'io.nats.client', 'me.lucko.luckperms.lib.nats'
+    relocate 'com.rabbitmq', 'me.lucko.luckperms.lib.rabbitmq'
+    relocate 'org.apache.commons.pool2', 'me.lucko.luckperms.lib.commonspool2'
+    relocate 'ninja.leaping.configurate', 'me.lucko.luckperms.lib.configurate'
+}
