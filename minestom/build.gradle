@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     alias(libs.plugins.shadow)
     id("java-library")
@@ -22,6 +24,16 @@ dependencies {
     testImplementation "dev.hollowcube:minestom-ce-snapshots:1_20_4-12eb5c26b0"
     testImplementation "ch.qos.logback:logback-classic:1.4.14"
     testImplementation "org.spongepowered:configurate-hocon:3.7.2"
+}
+
+task processSource(type: Sync) {
+    from sourceSets.main.java
+    filter(ReplaceTokens, tokens: [VERSION: project.ext.fullVersion])
+    into project.getLayout().getBuildDirectory().get().dir("src")
+}
+
+compileJava {
+    source = processSource.outputs
 }
 
 shadowJar {

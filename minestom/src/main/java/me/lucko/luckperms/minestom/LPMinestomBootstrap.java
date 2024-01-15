@@ -31,12 +31,12 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
     private boolean serverStopping = false;
     private Instant startTime;
 
-    public LPMinestomBootstrap(Logger logger, Path dataDirectory) {
+    public LPMinestomBootstrap(Logger logger, Path dataDirectory, boolean commands) {
         this.logger = new Slf4jPluginLogger(logger);
         this.dataDirectory = dataDirectory;
         this.schedulerAdapter = new MinestomSchedulerAdapter(this);
         this.classPathAppender = new NoopClassPathAppender();
-        this.plugin = new LPMinestomPlugin(this);
+        this.plugin = new LPMinestomPlugin(this, commands);
     }
 
     public void onEnable() {
@@ -93,7 +93,7 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
 
     @Override
     public String getVersion() {
-        return "5.4.177"; // todo: get luckperms version
+        return "@VERSION@";
     }
 
     @Override

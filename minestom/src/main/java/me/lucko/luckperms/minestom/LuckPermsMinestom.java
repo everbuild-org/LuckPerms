@@ -13,8 +13,12 @@ public final class LuckPermsMinestom {
     private LuckPermsMinestom() {}
 
     public static void enable(Path dataDirectory) {
+        enable(dataDirectory, true);
+    }
+
+    public static void enable(Path dataDirectory, boolean commands) {
         if (bootstrap != null) throw new RuntimeException("Cannot initialize LuckPerms Minestom - it is already initialized!");
-        bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory);
+        bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory, commands);
         bootstrap.onEnable();
     }
 

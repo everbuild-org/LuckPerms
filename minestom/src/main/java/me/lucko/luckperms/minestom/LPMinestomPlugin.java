@@ -42,6 +42,7 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private final EventNode<Event> eventNode = EventNode.all("luckperms");
 
     private final LPMinestomBootstrap bootstrap;
+    private final boolean commands;
 
     private MinestomSenderFactory senderFactory;
     private MinestomContextManager contextManager;
@@ -51,8 +52,9 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private MinestomCommandExecutor commandManager;
     private MinestomConnectionListener connectionListener;
 
-    LPMinestomPlugin(LPMinestomBootstrap bootstrap) {
+    LPMinestomPlugin(LPMinestomBootstrap bootstrap, boolean commands) {
         this.bootstrap = bootstrap;
+        this.commands = commands;
     }
 
     @Override
@@ -78,8 +80,10 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
 
     @Override
     protected void registerCommands() {
-        this.commandManager = new MinestomCommandExecutor(this);
-        this.commandManager.register();
+        if (commands) {
+            this.commandManager = new MinestomCommandExecutor(this);
+            this.commandManager.register();
+        }
     }
 
     @Override
