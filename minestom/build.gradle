@@ -14,9 +14,14 @@ repositories {
 
 dependencies {
     api project(":common")
-    compileOnlyApi project(":common:loader-utils")
-
+    api "org.spongepowered:configurate-hocon:3.7.2"
     compileOnlyApi("dev.hollowcube:minestom-ce-snapshots:1_20_4-12eb5c26b0")
+
+    // testing
+    testImplementation project(":common")
+    testImplementation "dev.hollowcube:minestom-ce-snapshots:1_20_4-12eb5c26b0"
+    testImplementation "ch.qos.logback:logback-classic:1.4.14"
+    testImplementation "org.spongepowered:configurate-hocon:3.7.2"
 }
 
 shadowJar {
