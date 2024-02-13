@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     alias(libs.plugins.shadow)
-    id("java-library")
+    id "java-library"
 }
 
 // minestom requires java 17+
@@ -17,11 +17,11 @@ repositories {
 dependencies {
     api project(":common")
     api "org.spongepowered:configurate-hocon:3.7.2"
-    compileOnlyApi("dev.hollowcube:minestom-ce-snapshots:1_20_4-12eb5c26b0")
+    compileOnlyApi("net.minestom:minestom-snapshots:fe46ed4ac2")
 
     // testing
     testImplementation project(":common")
-    testImplementation "dev.hollowcube:minestom-ce-snapshots:1_20_4-12eb5c26b0"
+    testImplementation "net.minestom:minestom-snapshots:fe46ed4ac2"
     testImplementation "ch.qos.logback:logback-classic:1.4.14"
     testImplementation "org.spongepowered:configurate-hocon:3.7.2"
 }
@@ -61,4 +61,53 @@ shadowJar {
     relocate 'com.rabbitmq', 'me.lucko.luckperms.lib.rabbitmq'
     relocate 'org.apache.commons.pool2', 'me.lucko.luckperms.lib.commonspool2'
     relocate 'ninja.leaping.configurate', 'me.lucko.luckperms.lib.configurate'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'minestom'
+
+            from components.java
+
+            pom {
+                name = 'LuckPerms Minestom'
+                description = 'A permissions plugin for Minestom servers.'
+                url = 'https://github.com/LooFifteen/LuckPerms'
+
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'lucko'
+                        name = 'Luck'
+                        url = 'https://lucko.me'
+                        email = 'git@lucko.me'
+                    }
+                    developer {
+                        id = 'LooFifteen'
+                        name = 'LU15'
+                        url = 'https://lu15.dev'
+                        email = 'luis@lu15.dev'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:https://github.com/LooFifteen/LuckPerms.git'
+                    developerConnection = 'scm:git:git@github.com:LooFifteen/LuckPerms.git'
+                    url = 'https://github.com/LooFifteen/LuckPerms'
+                }
+
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/LooFifteen/LuckPerms/issues'
+                }
+            }
+        }
+    }
 }
