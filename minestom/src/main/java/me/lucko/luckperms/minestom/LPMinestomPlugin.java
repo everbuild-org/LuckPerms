@@ -2,6 +2,7 @@ package me.lucko.luckperms.minestom;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import me.lucko.luckperms.common.api.LuckPermsApiProvider;
 import me.lucko.luckperms.common.calculator.CalculatorFactory;
@@ -26,6 +27,7 @@ import me.lucko.luckperms.common.plugin.bootstrap.LuckPermsBootstrap;
 import me.lucko.luckperms.common.plugin.util.AbstractConnectionListener;
 import me.lucko.luckperms.common.sender.Sender;
 import me.lucko.luckperms.minestom.calculator.MinestomCalculatorFactory;
+import me.lucko.luckperms.minestom.context.ContextProvider;
 import me.lucko.luckperms.minestom.context.MinestomContextManager;
 import me.lucko.luckperms.minestom.context.MinestomPlayerCalculator;
 import me.lucko.luckperms.minestom.listeners.MinestomConnectionListener;
@@ -36,12 +38,14 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
+import org.jetbrains.annotations.NotNull;
 
 public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
 
     private final EventNode<Event> eventNode = EventNode.all("luckperms");
 
     private final LPMinestomBootstrap bootstrap;
+    private final Set<ContextProvider> contextProviders;
     private final boolean commands;
 
     private MinestomSenderFactory senderFactory;
@@ -52,8 +56,9 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private MinestomCommandExecutor commandManager;
     private MinestomConnectionListener connectionListener;
 
-    LPMinestomPlugin(LPMinestomBootstrap bootstrap, boolean commands) {
+    LPMinestomPlugin(@NotNull LPMinestomBootstrap bootstrap, @NotNull Set<ContextProvider> contextProviders, boolean commands) {
         this.bootstrap = bootstrap;
+        this.contextProviders = contextProviders;
         this.commands = commands;
     }
 
@@ -101,7 +106,7 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     @Override
     protected void setupContextManager() {
         this.contextManager = new MinestomContextManager(this);
-        this.contextManager.registerCalculator(new MinestomPlayerCalculator(this, this.eventNode, getConfiguration().get(ConfigKeys.DISABLED_CONTEXTS)));
+        this.contextManager.registerCalculator(new MinestomPlayerCalculator(this, this.eventNode, this.contextProviders, getConfiguration().get(ConfigKeys.DISABLED_CONTEXTS)));
     }
 
     @Override

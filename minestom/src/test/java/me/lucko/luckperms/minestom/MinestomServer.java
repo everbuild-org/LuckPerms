@@ -2,6 +2,7 @@ package me.lucko.luckperms.minestom;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -36,12 +37,17 @@ public final class MinestomServer {
         MinecraftServer server = MinecraftServer.init();
 
         // initialize LuckPerms
-        LuckPerms luckPerms = LuckPermsMinestom.enable(Files.createTempDirectory("luckperms-minestom-test"));
+        Path directory = Files.createTempDirectory("luckperms-minestom-test");
+        LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
+                .commands(true)
+                .contextProvider(new DummyContextProvider())
+                .enable();
 
         // set custom player provider (optional)
         ConnectionManager connectionManager = MinecraftServer.getConnectionManager();
         connectionManager.setPlayerProvider((uuid, username, connection) -> new ExamplePlayer(luckPerms, uuid, username, connection));
 
+        // set up Minestom
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
 
@@ -50,14 +56,19 @@ public final class MinestomServer {
             event.setSpawningInstance(instance);
             event.getPlayer().setRespawnPoint(new Pos(0, 41, 0));
         });
+
         // example of adding permissions to a player via the custom player class
         eventNode.addListener(PlayerSpawnEvent.class, event -> {
             if (!(event.getPlayer() instanceof ExamplePlayer player)) return;
             player.setPermission(
                     Node.builder("*")
                             .expiry(10, TimeUnit.SECONDS)
-                            .context(ImmutableContextSet.of(DefaultContextKeys.DIMENSION_TYPE_KEY, "overworld"))
-                            .build(),
+                            .context(
+                                    ImmutableContextSet.builder()
+                                            .add(DefaultContextKeys.DIMENSION_TYPE_KEY, "overworld")
+                                            .add("dummy", "true")
+                                            .build()
+                            ).build(),
                     true
             );
         });
@@ -72,6 +83,16 @@ public final class MinestomServer {
             else sender.sendMessage("Sender is not a player");
         }, permissionArgument);
         commandManager.register(command);
+
+        // register shutdown hook to delete the temp directory
+        MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
+            try {
+                LuckPermsMinestom.disable();
+                Files.deleteIfExists(directory);
+            } catch (IOException ignored) {
+                // oh well...
+            }
+        });
 
         OpenToLAN.open();
         MojangAuth.init();

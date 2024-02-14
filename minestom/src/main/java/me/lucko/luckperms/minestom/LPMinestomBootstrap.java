@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import me.lucko.luckperms.common.plugin.bootstrap.LuckPermsBootstrap;
@@ -11,9 +12,11 @@ import me.lucko.luckperms.common.plugin.classpath.ClassPathAppender;
 import me.lucko.luckperms.common.plugin.logging.PluginLogger;
 import me.lucko.luckperms.common.plugin.logging.Slf4jPluginLogger;
 import me.lucko.luckperms.common.plugin.scheduler.SchedulerAdapter;
+import me.lucko.luckperms.minestom.context.ContextProvider;
 import net.luckperms.api.platform.Platform;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public final class LPMinestomBootstrap implements LuckPermsBootstrap {
@@ -31,12 +34,12 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
     private boolean serverStopping = false;
     private Instant startTime;
 
-    public LPMinestomBootstrap(Logger logger, Path dataDirectory, boolean commands) {
+    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, boolean commands) {
         this.logger = new Slf4jPluginLogger(logger);
         this.dataDirectory = dataDirectory;
         this.schedulerAdapter = new MinestomSchedulerAdapter(this);
         this.classPathAppender = new NoopClassPathAppender();
-        this.plugin = new LPMinestomPlugin(this, commands);
+        this.plugin = new LPMinestomPlugin(this, contextProviders, commands);
     }
 
     public void onEnable() {
