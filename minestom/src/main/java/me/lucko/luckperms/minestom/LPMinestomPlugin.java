@@ -26,6 +26,7 @@ import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
 import me.lucko.luckperms.common.plugin.bootstrap.LuckPermsBootstrap;
 import me.lucko.luckperms.common.plugin.util.AbstractConnectionListener;
 import me.lucko.luckperms.common.sender.Sender;
+import me.lucko.luckperms.common.treeview.PermissionRegistry;
 import me.lucko.luckperms.minestom.calculator.MinestomCalculatorFactory;
 import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
 import me.lucko.luckperms.minestom.context.ContextProvider;
@@ -47,6 +48,7 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
 
     private final LPMinestomBootstrap bootstrap;
     private final Set<ContextProvider> contextProviders;
+    private final @NotNull Set<String> permissionSuggestions;
     private final boolean commands;
     private final @NotNull ConfigurationAdapter configurationAdapter;
 
@@ -58,9 +60,10 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private MinestomCommandExecutor commandManager;
     private MinestomConnectionListener connectionListener;
 
-    LPMinestomPlugin(@NotNull LPMinestomBootstrap bootstrap, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter, boolean commands) {
+    LPMinestomPlugin(@NotNull LPMinestomBootstrap bootstrap, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter, @NotNull Set<String> permissionSuggestions, boolean commands) {
         this.bootstrap = bootstrap;
         this.contextProviders = contextProviders;
+        this.permissionSuggestions = permissionSuggestions;
         this.commands = commands;
         this.configurationAdapter = configurationAdapter.apply(this);
     }
@@ -129,7 +132,8 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
 
     @Override
     protected void performFinalSetup() {
-
+        PermissionRegistry permissionRegistry = this.getPermissionRegistry();
+        this.permissionSuggestions.forEach(permissionRegistry::offer);
     }
 
     @Override

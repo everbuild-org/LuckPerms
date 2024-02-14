@@ -37,12 +37,12 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
     private boolean serverStopping = false;
     private Instant startTime;
 
-    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter, boolean commands) {
+    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter, @NotNull Set<String> permissionSuggestions, boolean commands) {
         this.logger = new Slf4jPluginLogger(logger);
         this.dataDirectory = dataDirectory;
         this.schedulerAdapter = new MinestomSchedulerAdapter(this);
         this.classPathAppender = new NoopClassPathAppender();
-        this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, commands);
+        this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, permissionSuggestions, commands);
     }
 
     public void onEnable() {
