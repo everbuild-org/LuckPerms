@@ -4,6 +4,10 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
+import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
+import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
+import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
 import me.lucko.luckperms.minestom.context.ContextProvider;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -39,6 +43,8 @@ public final class LuckPermsMinestom {
         @NotNull Builder contextProviders(@NotNull ContextProvider... providers);
         @NotNull Builder contextProviders(@NotNull Iterable<ContextProvider> providers);
 
+        @NotNull Builder configurationAdapter(@NotNull Function<LuckPermsPlugin, ConfigurationAdapter> adapter);
+
         @NotNull LuckPerms enable();
     }
 
@@ -47,9 +53,11 @@ public final class LuckPermsMinestom {
 
         private final Path dataDirectory;
         private boolean commands = true;
+        private @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter;
 
         private BuilderImpl(Path dataDirectory) {
             this.dataDirectory = dataDirectory;
+            this.configurationAdapter = lp -> new HoconConfigAdapter(lp, dataDirectory);
         }
 
         @Override
@@ -86,8 +94,14 @@ public final class LuckPermsMinestom {
         }
 
         @Override
+        public @NotNull Builder configurationAdapter(@NotNull Function<LuckPermsPlugin, ConfigurationAdapter> adapter) {
+            this.configurationAdapter = adapter;
+            return this;
+        }
+
+        @Override
         public @NotNull LuckPerms enable() {
-            bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory, this.contextProviders, this.commands);
+            bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory, this.contextProviders, this.configurationAdapter, this.commands);
             bootstrap.onEnable();
             return LuckPermsProvider.get();
         }

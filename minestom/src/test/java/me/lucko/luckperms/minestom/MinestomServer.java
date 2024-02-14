@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import me.lucko.luckperms.minestom.configuration.EnvironmentConfigAdapter;
+import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.context.ContextSet;
@@ -41,6 +43,7 @@ public final class MinestomServer {
         LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
                 .commands(true)
                 .contextProvider(new DummyContextProvider())
+                .configurationAdapter(plugin -> new EnvironmentConfigAdapter(plugin, new HoconConfigAdapter(plugin, directory)))
                 .enable();
 
         // set custom player provider (optional)

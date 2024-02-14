@@ -3,15 +3,14 @@ package me.lucko.luckperms.minestom;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import me.lucko.luckperms.common.api.LuckPermsApiProvider;
 import me.lucko.luckperms.common.calculator.CalculatorFactory;
 import me.lucko.luckperms.common.command.CommandManager;
 import me.lucko.luckperms.common.config.ConfigKeys;
 import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
-import me.lucko.luckperms.common.context.manager.ContextManager;
 import me.lucko.luckperms.common.event.AbstractEventBus;
-import me.lucko.luckperms.common.locale.TranslationManager;
 import me.lucko.luckperms.common.messaging.MessagingFactory;
 import me.lucko.luckperms.common.model.Group;
 import me.lucko.luckperms.common.model.Track;
@@ -23,10 +22,12 @@ import me.lucko.luckperms.common.model.manager.track.TrackManager;
 import me.lucko.luckperms.common.model.manager.user.StandardUserManager;
 import me.lucko.luckperms.common.model.manager.user.UserManager;
 import me.lucko.luckperms.common.plugin.AbstractLuckPermsPlugin;
+import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
 import me.lucko.luckperms.common.plugin.bootstrap.LuckPermsBootstrap;
 import me.lucko.luckperms.common.plugin.util.AbstractConnectionListener;
 import me.lucko.luckperms.common.sender.Sender;
 import me.lucko.luckperms.minestom.calculator.MinestomCalculatorFactory;
+import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
 import me.lucko.luckperms.minestom.context.ContextProvider;
 import me.lucko.luckperms.minestom.context.MinestomContextManager;
 import me.lucko.luckperms.minestom.context.MinestomPlayerCalculator;
@@ -47,6 +48,7 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private final LPMinestomBootstrap bootstrap;
     private final Set<ContextProvider> contextProviders;
     private final boolean commands;
+    private final @NotNull ConfigurationAdapter configurationAdapter;
 
     private MinestomSenderFactory senderFactory;
     private MinestomContextManager contextManager;
@@ -56,10 +58,11 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private MinestomCommandExecutor commandManager;
     private MinestomConnectionListener connectionListener;
 
-    LPMinestomPlugin(@NotNull LPMinestomBootstrap bootstrap, @NotNull Set<ContextProvider> contextProviders, boolean commands) {
+    LPMinestomPlugin(@NotNull LPMinestomBootstrap bootstrap, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter, boolean commands) {
         this.bootstrap = bootstrap;
         this.contextProviders = contextProviders;
         this.commands = commands;
+        this.configurationAdapter = configurationAdapter.apply(this);
     }
 
     @Override
@@ -69,7 +72,7 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
 
     @Override
     protected ConfigurationAdapter provideConfigurationAdapter() {
-        return new HoconConfigAdapter(this, resolveConfig("luckperms.conf"));
+        return this.configurationAdapter;
     }
 
     @Override

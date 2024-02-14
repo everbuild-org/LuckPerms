@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Function;
+import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
+import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
 import me.lucko.luckperms.common.plugin.bootstrap.LuckPermsBootstrap;
 import me.lucko.luckperms.common.plugin.classpath.ClassPathAppender;
 import me.lucko.luckperms.common.plugin.logging.PluginLogger;
@@ -34,12 +37,12 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
     private boolean serverStopping = false;
     private Instant startTime;
 
-    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, boolean commands) {
+    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter, boolean commands) {
         this.logger = new Slf4jPluginLogger(logger);
         this.dataDirectory = dataDirectory;
         this.schedulerAdapter = new MinestomSchedulerAdapter(this);
         this.classPathAppender = new NoopClassPathAppender();
-        this.plugin = new LPMinestomPlugin(this, contextProviders, commands);
+        this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, commands);
     }
 
     public void onEnable() {

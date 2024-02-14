@@ -10,6 +10,7 @@ import net.luckperms.api.messenger.MessengerProvider;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerPluginMessageEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public final class MinestomMessagingFactory extends MessagingFactory<LPMinestomPlugin> {
 
@@ -33,25 +34,22 @@ public final class MinestomMessagingFactory extends MessagingFactory<LPMinestomP
         return super.getServiceFor(messagingType);
     }
 
-    private class PluginMessageMessengerProvider implements MessengerProvider {
+    private record PluginMessageMessengerProvider(
+            @NotNull EventNode<? super PlayerPluginMessageEvent> eventNode
+    ) implements MessengerProvider {
 
-        private final EventNode<? super PlayerPluginMessageEvent> eventNode;
+            @Override
+            public @NonNull String getName() {
+                return "PluginMessage";
+            }
 
-        PluginMessageMessengerProvider(@NonNull EventNode<? super PlayerPluginMessageEvent> eventNode) {
-            this.eventNode = eventNode;
+            @Override
+            public @NonNull Messenger obtain(@NonNull IncomingMessageConsumer incomingMessageConsumer) {
+                PluginMessageMessenger messenger = new PluginMessageMessenger(this.eventNode, incomingMessageConsumer);
+                messenger.init();
+                return messenger;
+            }
+
         }
-
-        @Override
-        public @NonNull String getName() {
-            return "PluginMessage";
-        }
-
-        @Override
-        public @NonNull Messenger obtain(@NonNull IncomingMessageConsumer incomingMessageConsumer) {
-            PluginMessageMessenger messenger = new PluginMessageMessenger(this.eventNode, incomingMessageConsumer);
-            messenger.init();
-            return messenger;
-        }
-    }
 
 }
