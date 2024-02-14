@@ -2,6 +2,7 @@ package me.lucko.luckperms.minestom;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.context.ContextSet;
@@ -35,8 +36,7 @@ public final class MinestomServer {
         MinecraftServer server = MinecraftServer.init();
 
         // initialize LuckPerms
-        LuckPermsMinestom.enable(Files.createTempDirectory("luckperms-minestom-test"));
-        LuckPerms luckPerms = LuckPermsProvider.get();
+        LuckPerms luckPerms = LuckPermsMinestom.enable(Files.createTempDirectory("luckperms-minestom-test"));
 
         // set custom player provider (optional)
         ConnectionManager connectionManager = MinecraftServer.getConnectionManager();
@@ -55,6 +55,7 @@ public final class MinestomServer {
             if (!(event.getPlayer() instanceof ExamplePlayer player)) return;
             player.setPermission(
                     Node.builder("*")
+                            .expiry(10, TimeUnit.SECONDS)
                             .context(ImmutableContextSet.of(DefaultContextKeys.DIMENSION_TYPE_KEY, "overworld"))
                             .build(),
                     true

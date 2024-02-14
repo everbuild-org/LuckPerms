@@ -1,6 +1,9 @@
 package me.lucko.luckperms.minestom;
 
 import java.nio.file.Path;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,14 +15,15 @@ public final class LuckPermsMinestom {
 
     private LuckPermsMinestom() {}
 
-    public static void enable(Path dataDirectory) {
-        enable(dataDirectory, true);
+    public static @NotNull LuckPerms enable(Path dataDirectory) {
+        return enable(dataDirectory, true);
     }
 
-    public static void enable(Path dataDirectory, boolean commands) {
+    public static @NotNull LuckPerms enable(Path dataDirectory, boolean commands) {
         if (bootstrap != null) throw new RuntimeException("Cannot initialize LuckPerms Minestom - it is already initialized!");
         bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory, commands);
         bootstrap.onEnable();
+        return LuckPermsProvider.get();
     }
 
     public static void disable() {
