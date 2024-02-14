@@ -1,6 +1,8 @@
 package me.lucko.luckperms.minestom;
 
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.data.DataMutateResult;
 import net.luckperms.api.model.user.User;
@@ -21,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
  * Every situation is different, and you should consider your own requirements when implementing permission handling.
  */
 public final class ExamplePlayer extends Player {
+
+    private static final @NotNull MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
     private final @NotNull LuckPerms luckPerms;
     private final @NonNull PlayerAdapter<Player> playerAdapter;
@@ -161,6 +165,32 @@ public final class ExamplePlayer extends Player {
     public @NotNull Tristate getPermissionValue(@NotNull String permissionName) {
         User user = this.getLuckPermsUser();
         return user.getCachedData().getPermissionData().checkPermission(permissionName);
+    }
+
+    /**
+     * Gets the prefix of the player. This method uses the MiniMessage library
+     * to parse the prefix, which is a more advanced option than using legacy
+     * chat formatting.
+     * @return the prefix of the player
+     */
+    public @NotNull Component getPrefix() {
+        User user = this.getLuckPermsUser();
+        String prefix = user.getCachedData().getMetaData().getPrefix();
+        if (prefix == null) return Component.empty();
+        return MINI_MESSAGE.deserialize(prefix);
+    }
+
+    /**
+     * Gets the suffix of the player. This method uses the MiniMessage library
+     * to parse the suffix, which is a more advanced option than using legacy
+     * chat formatting.
+     * @return the suffix of the player
+     */
+    public @NotNull Component getSuffix() {
+        User user = this.getLuckPermsUser();
+        String suffix = user.getCachedData().getMetaData().getSuffix();
+        if (suffix == null) return Component.empty();
+        return MINI_MESSAGE.deserialize(suffix);
     }
 
 }

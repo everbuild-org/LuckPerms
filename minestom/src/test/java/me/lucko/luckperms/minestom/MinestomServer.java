@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import me.lucko.luckperms.minestom.configuration.EnvironmentConfigAdapter;
 import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
+import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.context.ContextSet;
@@ -25,6 +26,7 @@ import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
+import net.minestom.server.event.player.PlayerChatEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
@@ -62,12 +64,24 @@ public final class MinestomServer {
             event.getPlayer().setRespawnPoint(new Pos(0, 41, 0));
         });
 
+        // set custom chat handling (optional)
+        eventNode.addListener(PlayerChatEvent.class, event -> {
+            if (!(event.getPlayer() instanceof ExamplePlayer player)) return;
+            event.setChatFormat(e -> Component.text().append(
+                    player.getPrefix(),
+                    player.getName(),
+                    player.getSuffix(),
+                    Component.text(": "),
+                    Component.text(e.getMessage())
+            ).build());
+        });
+
         // example of adding permissions to a player via the custom player class
         eventNode.addListener(PlayerSpawnEvent.class, event -> {
             if (!(event.getPlayer() instanceof ExamplePlayer player)) return;
             player.setPermission(
                     Node.builder("*")
-                            .expiry(10, TimeUnit.SECONDS)
+                            //.expiry(10, TimeUnit.SECONDS)
                             .context(
                                     ImmutableContextSet.builder()
                                             .add(DefaultContextKeys.DIMENSION_TYPE_KEY, "overworld")
