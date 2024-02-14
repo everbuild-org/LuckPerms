@@ -1,4 +1,4 @@
-7package me.lucko.luckperms.minestom.context;
+package me.lucko.luckperms.minestom.context;
 
 import java.util.Optional;
 import java.util.Set;
