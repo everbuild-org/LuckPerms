@@ -37,6 +37,7 @@ public final class MinestomServer {
 
     public static void main(String[] args) throws IOException {
         MinecraftServer server = MinecraftServer.init();
+        MinecraftServer.setBrandName("LU15");
 
         // initialize LuckPerms
         Path directory = Files.createTempDirectory("luckperms-minestom-test");

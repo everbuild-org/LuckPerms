@@ -114,7 +114,7 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
 
     @Override
     public String getServerBrand() {
-        return "Minestom";
+        return MinecraftServer.getBrandName();
     }
 
     @Override
