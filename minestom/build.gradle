@@ -63,7 +63,20 @@ shadowJar {
     relocate 'ninja.leaping.configurate', 'me.lucko.luckperms.lib.configurate'
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 publishing {
+    repositories {
+        maven {
+            name = 'hyperaSnapshots'
+            url = 'https://repo.hypera.dev/snapshots'
+            credentials(PasswordCredentials)
+        }
+    }
+
     publications {
         mavenJava(MavenPublication) {
             artifactId = 'minestom'

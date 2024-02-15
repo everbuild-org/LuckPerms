@@ -1,0 +1,17 @@
+name: Publish Minestom support
+on:
+  push:
+    branches:
+      - 'feat/minestom'
+
+concurrency: "gradle-snapshot-${{ github.ref }}"
+
+jobs:
+  snapshot:
+    name: "Snapshot"
+    uses: HyperaDev/actions/.github/workflows/gradle-snapshot.yml@main
+    with:
+      java_version: "21"
+    secrets:
+      HYPERA_SNAPSHOTS_USERNAME: "${{ secrets.HYPERA_SNAPSHOTS_USERNAME }}"
+      HYPERA_SNAPSHOTS_PASSWORD: "${{ secrets.HYPERA_SNAPSHOTS_PASSWORD }}"

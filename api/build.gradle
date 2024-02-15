@@ -105,7 +105,19 @@ if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePass
 }
 */
 
+java {
+    withSourcesJar()
+}
+
 publishing {
+    repositories {
+        maven {
+            name = 'hyperaSnapshots'
+            url = 'https://repo.hypera.dev/snapshots'
+            credentials(PasswordCredentials)
+        }
+    }
+
     publications {
         mavenJava(MavenPublication) {
             artifactId = 'api'
