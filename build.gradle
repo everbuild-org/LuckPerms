@@ -7,6 +7,9 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 defaultTasks 'licenseFormat', 'build'
 
+// get ci to work
+version = '5.4-SNAPSHOT'
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
