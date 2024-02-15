@@ -47,7 +47,7 @@ public final class MinestomServer {
                 .commands(true)
                 .contextProvider(new DummyContextProvider())
                 .configurationAdapter(plugin -> new EnvironmentConfigAdapter(plugin, new HoconConfigAdapter(plugin, directory)))
-                .permissionSuggestion("test.permission")
+                .permissionSuggestions("test.permission", "test.other")
                 .enable();
 
         // set custom player provider (optional)
