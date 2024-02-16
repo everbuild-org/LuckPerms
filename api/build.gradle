@@ -1,5 +1,6 @@
 group = 'net.luckperms'
-project.version = '5.4'
+// make api snapshots work for minestom publication
+//project.version = '5.4'
 
 jar {
     manifest {
