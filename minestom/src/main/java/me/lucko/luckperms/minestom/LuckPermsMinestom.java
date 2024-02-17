@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 
 public final class LuckPermsMinestom {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LuckPermsMinestom.class);
-
     private static LPMinestomBootstrap bootstrap = null;
 
     private LuckPermsMinestom() {}
@@ -108,6 +106,14 @@ public final class LuckPermsMinestom {
 
 
         /**
+         * Sets the logger to use
+         * @param logger the logger to use
+         * @return the builder instance
+         */
+        @NotNull Builder logger(@NotNull Logger logger);
+
+
+        /**
          * Enables LuckPerms
          * @return the LuckPerms instance
          */
@@ -122,6 +128,7 @@ public final class LuckPermsMinestom {
         private boolean commands = true;
         private @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter = EnvironmentVariableConfigAdapter::new;
         private boolean dependencyManager = false;
+        private @NotNull Logger logger = LoggerFactory.getLogger(LuckPermsMinestom.class);
 
         private BuilderImpl(@NotNull Path dataDirectory) {
             this.dataDirectory = dataDirectory;
@@ -180,8 +187,14 @@ public final class LuckPermsMinestom {
         }
 
         @Override
+        public @NotNull Builder logger(@NotNull Logger logger) {
+            this.logger = logger;
+            return this;
+        }
+
+        @Override
         public @NotNull LuckPerms enable() {
-            bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory, this.contextProviders, this.configurationAdapter, this.dependencyManager, this.permissionSuggestions, this.commands);
+            bootstrap = new LPMinestomBootstrap(this.logger, this.dataDirectory, this.contextProviders, this.configurationAdapter, this.dependencyManager, this.permissionSuggestions, this.commands);
             bootstrap.onEnable();
             return LuckPermsProvider.get();
         }
