@@ -19,7 +19,7 @@ dependencies {
         exclude group: "org.spongepowered", module: "configurate-yaml"
         exclude group: "org.spongepowered", module: "configurate-gson"
         exclude group: "org.spongepowered", module: "configurate-hocon"
-        exclude group: "org.spongepowered", module: "configurate-toml"
+        exclude group: "me.lucko.configurate", module: "configurate-toml"
     }
     compileOnlyApi("net.minestom:minestom-snapshots:fe46ed4ac2")
 
