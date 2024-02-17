@@ -6,9 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
-import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
-import me.lucko.luckperms.minestom.configuration.EnvironmentConfigAdapter;
-import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
+import me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter;
 import me.lucko.luckperms.minestom.context.ContextProvider;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -42,18 +40,6 @@ public final class LuckPermsMinestom {
          * @return the builder instance
          */
         @NotNull Builder commands(boolean enabled);
-
-        /**
-         * Enables the LuckPerms commands
-         * @return the builder instance
-         */
-        @NotNull Builder enableCommands();
-
-        /**
-         * Disables the LuckPerms commands
-         * @return the builder instance
-         */
-        @NotNull Builder disableCommands();
 
 
         /**
@@ -101,11 +87,24 @@ public final class LuckPermsMinestom {
 
 
         /**
-         * Sets the configuration adapter to use
+         * Sets the configuration adapter to use. Provided options are:
+         * - {@link me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter}
+         * - {@link me.lucko.luckperms.common.config.generic.adapter.MultiConfigurationAdapter}
+         * - {@link me.lucko.luckperms.common.config.generic.adapter.SystemPropertyConfigAdapter}
+         * - {@link me.lucko.luckperms.common.config.generic.adapter.ConfigurateConfigAdapter}
          * @param adapter the adapter to use
          * @return the builder instance
          */
-        @NotNull Builder configurationAdapter(@NotNull Function<LuckPermsPlugin, ConfigurationAdapter> adapter);
+        @NotNull Builder configurationAdapter(@NotNull Function<LPMinestomPlugin, ConfigurationAdapter> adapter);
+
+
+        /**
+         * Enables the dependency manager, which will automatically download and load LuckPerms dependencies
+         * during runtime.
+         * @param enabled if the dependency manager should be enabled
+         * @return the builder instance
+         */
+        @NotNull Builder dependencyManager(boolean enabled);
 
 
         /**
@@ -121,27 +120,17 @@ public final class LuckPermsMinestom {
 
         private final Path dataDirectory;
         private boolean commands = true;
-        private @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter;
+        private @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter = EnvironmentVariableConfigAdapter::new;
+        private boolean dependencyManager = false;
 
-        private BuilderImpl(Path dataDirectory) {
+        private BuilderImpl(@NotNull Path dataDirectory) {
             this.dataDirectory = dataDirectory;
-            this.configurationAdapter = lp -> new EnvironmentConfigAdapter(lp, null);
         }
 
         @Override
         public @NotNull Builder commands(boolean enabled) {
             this.commands = enabled;
             return this;
-        }
-
-        @Override
-        public @NotNull Builder enableCommands() {
-            return this.commands(true);
-        }
-
-        @Override
-        public @NotNull Builder disableCommands() {
-            return this.commands(false);
         }
 
         @Override
@@ -179,14 +168,20 @@ public final class LuckPermsMinestom {
         }
 
         @Override
-        public @NotNull Builder configurationAdapter(@NotNull Function<LuckPermsPlugin, ConfigurationAdapter> adapter) {
+        public @NotNull Builder configurationAdapter(@NotNull Function<LPMinestomPlugin, ConfigurationAdapter> adapter) {
             this.configurationAdapter = adapter;
             return this;
         }
 
         @Override
+        public @NotNull Builder dependencyManager(boolean enabled) {
+            this.dependencyManager = enabled;
+            return this;
+        }
+
+        @Override
         public @NotNull LuckPerms enable() {
-            bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory, this.contextProviders, this.configurationAdapter, this.permissionSuggestions, this.commands);
+            bootstrap = new LPMinestomBootstrap(LOGGER, dataDirectory, this.contextProviders, this.configurationAdapter, this.dependencyManager, this.permissionSuggestions, this.commands);
             bootstrap.onEnable();
             return LuckPermsProvider.get();
         }

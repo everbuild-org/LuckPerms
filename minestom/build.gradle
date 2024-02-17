@@ -14,16 +14,21 @@ repositories {
 }
 
 dependencies {
-    api project(":common")
-    api "org.spongepowered:configurate-hocon:3.7.2"
+    api(project(":common")) {
+        // exclude default config providers as they are inaccessible from the minestom module anyway
+        exclude group: "org.spongepowered", module: "configurate-yaml"
+        exclude group: "org.spongepowered", module: "configurate-gson"
+        exclude group: "org.spongepowered", module: "configurate-hocon"
+        exclude group: "org.spongepowered", module: "configurate-toml"
+    }
     compileOnlyApi("net.minestom:minestom-snapshots:fe46ed4ac2")
 
     // testing
     testImplementation project(":common")
     testImplementation "net.minestom:minestom-snapshots:fe46ed4ac2"
-    testImplementation "ch.qos.logback:logback-classic:1.4.14"
-    testImplementation "org.spongepowered:configurate-hocon:3.7.2"
-    testImplementation "com.h2database:h2:2.2.224"
+    testImplementation "commons-net:commons-net:3.10.0" // fix vulnerability in minestom
+    testImplementation "ch.qos.logback:logback-classic:1.4.14" // logger
+    testImplementation "org.spongepowered:configurate-hocon:3.7.2" // configuration using hocon
 }
 
 task processSource(type: Sync) {

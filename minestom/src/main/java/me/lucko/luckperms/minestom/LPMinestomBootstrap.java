@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
+import me.lucko.luckperms.common.dependencies.DependencyManager;
 import me.lucko.luckperms.common.plugin.LuckPermsPlugin;
 import me.lucko.luckperms.common.plugin.bootstrap.LuckPermsBootstrap;
 import me.lucko.luckperms.common.plugin.classpath.ClassPathAppender;
@@ -34,16 +35,14 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
     private final CountDownLatch loadLatch = new CountDownLatch(1);
     private final CountDownLatch enableLatch = new CountDownLatch(1);
 
-    private boolean serverStarting = true;
-    private boolean serverStopping = false;
     private Instant startTime;
 
-    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LuckPermsPlugin, ConfigurationAdapter> configurationAdapter, @NotNull Set<String> permissionSuggestions, boolean commands) {
+    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter, boolean dependencyManager, @NotNull Set<String> permissionSuggestions, boolean commands) {
         this.logger = new Slf4jPluginLogger(logger);
         this.dataDirectory = dataDirectory;
         this.schedulerAdapter = new MinestomSchedulerAdapter(this);
         this.classPathAppender = new NoopClassPathAppender();
-        this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, permissionSuggestions, commands);
+        this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, dependencyManager, permissionSuggestions, commands);
     }
 
     public void onEnable() {
@@ -55,21 +54,16 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
         }
 
         // enable
-        this.serverStarting = true;
-        this.serverStopping = false;
         this.startTime = Instant.now();
 
         try {
             this.plugin.enable();
-
-            MinecraftServer.getSchedulerManager().scheduleNextTick(() -> this.serverStopping = false);
         } finally {
             this.enableLatch.countDown();
         }
     }
 
     public void onDisable() {
-        this.serverStopping = true;
         this.plugin.disable();
     }
 
@@ -126,14 +120,6 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
     @Override
     public Path getDataDirectory() {
         return this.dataDirectory;
-    }
-
-    public boolean isServerStarting() {
-        return this.serverStarting;
-    }
-
-    public boolean isServerStopping() {
-        return this.serverStopping;
     }
 
     @Override

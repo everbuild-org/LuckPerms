@@ -3,28 +3,22 @@ package me.lucko.luckperms.minestom;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
-import me.lucko.luckperms.minestom.configuration.EnvironmentConfigAdapter;
-import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
+import java.util.List;
+import me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter;
+import me.lucko.luckperms.common.config.generic.adapter.MultiConfigurationAdapter;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.context.ContextSet;
 import net.luckperms.api.context.DefaultContextKeys;
 import net.luckperms.api.context.ImmutableContextSet;
-import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.command.builder.Command;
-import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentString;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
-import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerChatEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
@@ -33,7 +27,6 @@ import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.ConnectionManager;
-import org.checkerframework.checker.units.qual.C;
 
 public final class MinestomServer {
 
@@ -46,8 +39,11 @@ public final class MinestomServer {
         LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
                 .commands(true)
                 .contextProvider(new DummyContextProvider())
-                .configurationAdapter(plugin -> new EnvironmentConfigAdapter(plugin, new HoconConfigAdapter(plugin)))
-                .permissionSuggestions("test.permission", "test.other")
+                .configurationAdapter(plugin -> new MultiConfigurationAdapter(plugin, List.of(
+                        new EnvironmentVariableConfigAdapter(plugin),
+                        new HoconConfigurationAdapter(plugin)
+                ))).permissionSuggestions("test.permission", "test.other")
+                .dependencyManager(true)
                 .enable();
 
         // set custom player provider (optional)
