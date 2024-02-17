@@ -1,6 +1,8 @@
 package me.lucko.luckperms.minestom;
 
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -10,6 +12,8 @@ import me.lucko.luckperms.common.calculator.CalculatorFactory;
 import me.lucko.luckperms.common.command.CommandManager;
 import me.lucko.luckperms.common.config.ConfigKeys;
 import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
+import me.lucko.luckperms.common.dependencies.Dependency;
+import me.lucko.luckperms.common.dependencies.DependencyManager;
 import me.lucko.luckperms.common.event.AbstractEventBus;
 import me.lucko.luckperms.common.messaging.MessagingFactory;
 import me.lucko.luckperms.common.model.Group;
@@ -32,6 +36,7 @@ import me.lucko.luckperms.minestom.configuration.HoconConfigAdapter;
 import me.lucko.luckperms.minestom.context.ContextProvider;
 import me.lucko.luckperms.minestom.context.MinestomContextManager;
 import me.lucko.luckperms.minestom.context.MinestomPlayerCalculator;
+import me.lucko.luckperms.minestom.dependencies.NoopDependencyManager;
 import me.lucko.luckperms.minestom.listeners.MinestomConnectionListener;
 import me.lucko.luckperms.minestom.messaging.MinestomMessagingFactory;
 import net.luckperms.api.LuckPerms;
@@ -193,4 +198,20 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     public Sender getConsoleSender() {
         return getSenderFactory().wrap(MinecraftServer.getCommandManager().getConsoleSender());
     }
+
+    @Override
+    public @NotNull Path resolveConfig(@NotNull String fileName) {
+        return super.resolveConfig(fileName);
+    }
+
+    @Override
+    protected DependencyManager createDependencyManager() {
+        return new NoopDependencyManager();
+    }
+
+    @Override
+    protected Set<Dependency> getGlobalDependencies() {
+        return Collections.emptySet();
+    }
+
 }

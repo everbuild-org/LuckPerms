@@ -26,7 +26,7 @@ public final class LuckPermsMinestom {
 
     public static @NotNull Builder builder(@NotNull Path dataDirectory) {
         if (bootstrap != null) throw new RuntimeException("Cannot initialize LuckPerms Minestom - it is already initialized!");
-        return new BuilderImpl(dataDirectory);
+        return new BuilderImpl(dataDirectory.toAbsolutePath());
     }
 
     public static void disable() {

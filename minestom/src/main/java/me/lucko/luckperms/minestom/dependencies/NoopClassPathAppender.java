@@ -1,4 +1,4 @@
-package me.lucko.luckperms.minestom;
+package me.lucko.luckperms.minestom.dependencies;
 
 import java.nio.file.Path;
 import me.lucko.luckperms.common.plugin.classpath.ClassPathAppender;

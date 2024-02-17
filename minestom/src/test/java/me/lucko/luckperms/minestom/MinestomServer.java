@@ -42,11 +42,11 @@ public final class MinestomServer {
         MinecraftServer.setBrandName("LU15");
 
         // initialize LuckPerms
-        Path directory = Files.createTempDirectory("luckperms-minestom-test");
+        Path directory = Path.of("luckperms");
         LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
                 .commands(true)
                 .contextProvider(new DummyContextProvider())
-                .configurationAdapter(plugin -> new EnvironmentConfigAdapter(plugin, new HoconConfigAdapter(plugin, directory)))
+                .configurationAdapter(plugin -> new EnvironmentConfigAdapter(plugin, new HoconConfigAdapter(plugin)))
                 .permissionSuggestions("test.permission", "test.other")
                 .enable();
 
