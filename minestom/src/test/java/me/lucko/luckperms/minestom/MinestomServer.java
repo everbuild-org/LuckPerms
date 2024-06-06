@@ -85,16 +85,16 @@ public final class MinestomServer {
                                             .build()
                             ).build(),
                     true
-            );
+            ).thenAccept(result -> player.sendMessage("Attempted to add permission: " + result));
         });
 
         // command to check if a player has a permission
         CommandManager commandManager = MinecraftServer.getCommandManager();
-        Command command = new Command("has");
+        Command command = new Command("permission");
         ArgumentString permissionArgument = ArgumentType.String("permission");
         command.addSyntax((sender, context) -> {
             String permission = context.get(permissionArgument);
-            if (sender instanceof ExamplePlayer player) sender.sendMessage(String.valueOf(player.hasPermission(permission)));
+            if (sender instanceof ExamplePlayer player) sender.sendMessage(player.getPermissionValue(permission).toString());
             else sender.sendMessage("Sender is not a player");
         }, permissionArgument);
         commandManager.register(command);

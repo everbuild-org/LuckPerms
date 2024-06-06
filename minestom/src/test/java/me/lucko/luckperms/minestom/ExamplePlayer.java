@@ -1,9 +1,11 @@
 package me.lucko.luckperms.minestom;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.data.DataMutateResult;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
@@ -13,6 +15,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.permission.Permission;
 import net.minestom.server.permission.PermissionVerifier;
+import net.minestom.server.utils.Unit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,14 +42,22 @@ public final class ExamplePlayer extends Player {
         return this.playerAdapter.getUser(this);
     }
 
+    private @NotNull CachedMetaData getLuckPermsMetaData() {
+        return this.getLuckPermsUser().getCachedData().getMetaData();
+    }
+
     /**
      * Adds a permission to the player. This method is deprecated as
-     * the {@link Permission} object is not used in the LuckPerms implementation.
+     * the {@link Permission} object is not used in the LuckPerms
+     * implementation and does not return a future.
      * @param permission the permission to add
      */
     @Deprecated
     @Override
     public void addPermission(@NotNull Permission permission) {
+        // this method implements itself as fire-and-forget as LuckPerms
+        // provides futures as responses to permission changes, which
+        // Minestom does not support in this context
         this.addPermission(permission.getPermissionName());
     }
 
@@ -55,11 +66,12 @@ public final class ExamplePlayer extends Player {
      * this method on a production server, and leave permission management
      * to the LuckPerms web interface or in-game commands.
      * @param permission the permission to add
+     * @return the result of the operation
      */
-    public void addPermission(@NotNull String permission) {
+    public @NotNull CompletableFuture<DataMutateResult> addPermission(@NotNull String permission) {
         User user = this.getLuckPermsUser();
-        user.data().add(Node.builder(permission).build());
-        this.luckPerms.getUserManager().saveUser(user);
+        DataMutateResult result = user.data().add(Node.builder(permission).build());
+        return this.luckPerms.getUserManager().saveUser(user).thenApply(ignored -> result);
     }
 
     /**
@@ -72,13 +84,12 @@ public final class ExamplePlayer extends Player {
      * @param value the value of the permission
      * @return the result of the operation
      */
-    public @NotNull DataMutateResult setPermission(@NotNull Node permission, boolean value) {
+    public @NotNull CompletableFuture<DataMutateResult> setPermission(@NotNull Node permission, boolean value) {
         User user = this.getLuckPermsUser();
         DataMutateResult result = value
                 ? user.data().add(permission)
                 : user.data().remove(permission);
-        this.luckPerms.getUserManager().saveUser(user);
-        return result;
+        return this.luckPerms.getUserManager().saveUser(user).thenApply(ignored -> result);
     }
 
     /**
@@ -87,9 +98,26 @@ public final class ExamplePlayer extends Player {
      * @param permission the permission to remove
      */
     @Deprecated
-    @Override
     public void removePermission(@NotNull Permission permission) {
+        // this method implements itself as fire-and-forget as LuckPerms
+        // provides futures as responses to permission changes, which
+        // Minestom does not support in this context
         this.removePermission(permission.getPermissionName());
+    }
+
+    /**
+     * Removes a permission from the player. You may choose not to implement
+     * this method on a production server, and leave permission management
+     * to the LuckPerms web interface or in-game commands. This method is
+     * deprecated as the overridden method does not return a future.
+     * @param permissionName the name of the permission to remove
+     */
+    @Override
+    @Deprecated
+    public void removePermission(@NotNull String permissionName) {
+        User user = this.getLuckPermsUser();
+        user.data().remove(Node.builder(permissionName).build());
+        this.luckPerms.getUserManager().saveUser(user);
     }
 
     /**
@@ -97,12 +125,12 @@ public final class ExamplePlayer extends Player {
      * this method on a production server, and leave permission management
      * to the LuckPerms web interface or in-game commands.
      * @param permissionName the name of the permission to remove
+     * @param ignored ignored parameter to differentiate from the overridden method
      */
-    @Override
-    public void removePermission(@NotNull String permissionName) {
+    public @NotNull CompletableFuture<DataMutateResult> removePermission(@NotNull String permissionName, @Nullable Void ignored) {
         User user = this.getLuckPermsUser();
-        user.data().remove(Node.builder(permissionName).build());
-        this.luckPerms.getUserManager().saveUser(user);
+        DataMutateResult result = user.data().remove(Node.builder(permissionName).build());
+        return this.luckPerms.getUserManager().saveUser(user).thenApply(ignored0 -> result);
     }
 
     /**
@@ -151,8 +179,7 @@ public final class ExamplePlayer extends Player {
      */
     @Override
     public boolean hasPermission(@NotNull String permissionName) {
-        User user = this.getLuckPermsUser();
-        return user.getCachedData().getPermissionData().checkPermission(permissionName).asBoolean();
+        return this.getPermissionValue(permissionName).asBoolean();
     }
 
     /**
@@ -174,8 +201,7 @@ public final class ExamplePlayer extends Player {
      * @return the prefix of the player
      */
     public @NotNull Component getPrefix() {
-        User user = this.getLuckPermsUser();
-        String prefix = user.getCachedData().getMetaData().getPrefix();
+        String prefix = this.getLuckPermsMetaData().getPrefix();
         if (prefix == null) return Component.empty();
         return MINI_MESSAGE.deserialize(prefix);
     }
@@ -187,8 +213,7 @@ public final class ExamplePlayer extends Player {
      * @return the suffix of the player
      */
     public @NotNull Component getSuffix() {
-        User user = this.getLuckPermsUser();
-        String suffix = user.getCachedData().getMetaData().getSuffix();
+        String suffix = this.getLuckPermsMetaData().getSuffix();
         if (suffix == null) return Component.empty();
         return MINI_MESSAGE.deserialize(suffix);
     }
