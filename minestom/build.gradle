@@ -4,9 +4,9 @@ plugins {
     id "java-library"
 }
 
-// minestom requires java 17+
-sourceCompatibility = 17
-targetCompatibility = 17
+// minestom requires java 21+
+sourceCompatibility = 21
+targetCompatibility = 21
 
 repositories {
     mavenCentral()
@@ -21,11 +21,11 @@ dependencies {
         exclude group: "org.spongepowered", module: "configurate-hocon"
         exclude group: "me.lucko.configurate", module: "configurate-toml"
     }
-    compileOnlyApi("net.minestom:minestom-snapshots:fe46ed4ac2")
+    compileOnlyApi("net.minestom:minestom-snapshots:1_20_5-b04ef5189f")
 
     // testing
     testImplementation project(":common")
-    testImplementation "net.minestom:minestom-snapshots:fe46ed4ac2"
+    testImplementation "net.minestom:minestom-snapshots:1_20_5-b04ef5189f"
     testImplementation "commons-net:commons-net:3.10.0" // fix vulnerability in minestom
     testImplementation "ch.qos.logback:logback-classic:1.4.14" // logger
     testImplementation "org.spongepowered:configurate-hocon:3.7.2" // configuration using hocon

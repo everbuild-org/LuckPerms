@@ -12,8 +12,6 @@ import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.utils.NamespaceID;
-import net.minestom.server.world.DimensionType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,16 +25,13 @@ public final class DimensionTypeContextProvider implements ContextProvider {
     @Override
     public @NotNull Optional<String> query(@NotNull Player subject) {
         return Optional.ofNullable(subject.getInstance())
-                .map(Instance::getDimensionType)
-                .map(DimensionType::getName)
-                .map(NamespaceID::value);
+                .map(Instance::getDimensionName);
     }
 
     @Override
     public @NotNull Set<String> potentialValues() {
-        return MinecraftServer.getDimensionTypeManager().unmodifiableList().stream()
-                .map(DimensionType::getName)
-                .map(NamespaceID::value)
+        return MinecraftServer.getDimensionTypeRegistry().values().stream()
+                .map((d) -> d.namespace().value())
                 .collect(Collectors.toSet());
     }
 
