@@ -1,5 +1,31 @@
 ![](https://raw.githubusercontent.com/LuckPerms/branding/master/banner/banner.png "Banner")
-# LuckPerms
+
+# LuckPerms for Minestom
+```kts
+repositories {
+    mavenCentral()
+    maven("https://repo.hypera.dev/")
+}
+
+dependencies {
+    implementation("me.lucko.luckperms:minestom:5.4-SNAPSHOT")
+}
+```
+
+```java
+Path directory = Path.of("luckperms");
+LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
+        .commands(true) // enables registration of LuckPerms commands
+        .contextProvider(new DummyContextProvider()) // provide additional custom contexts
+        .configurationAdapter(plugin -> new MultiConfigurationAdapter(plugin, // define the configuration
+                new EnvironmentVariableConfigAdapter(plugin), // use MultiConfigurationAdapter to load from multiple sources, in order
+                new HoconConfigurationAdapter(plugin)
+        )).permissionSuggestions("test.permission", "test.other") // add permission suggestions for commands and the web editor
+        .dependencyManager(true) // automatically download and classload dependencies
+        .enable();
+```
+
+## LuckPerms
 [![Build Status](https://ci.lucko.me/job/LuckPerms/badge/icon)](https://ci.lucko.me/job/LuckPerms/)
 [![javadoc](https://javadoc.io/badge2/net.luckperms/api/javadoc.svg)](https://javadoc.io/doc/net.luckperms/api)
 [![Maven Central](https://img.shields.io/maven-metadata/v/https/repo1.maven.org/maven2/net/luckperms/api/maven-metadata.xml.svg?label=maven%20central&colorB=brightgreen)](https://search.maven.org/artifact/net.luckperms/api)
