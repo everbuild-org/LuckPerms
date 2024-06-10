@@ -21,7 +21,7 @@ dependencies {
         exclude group: "org.spongepowered", module: "configurate-hocon"
         exclude group: "me.lucko.configurate", module: "configurate-toml"
     }
-    compileOnlyApi("net.minestom:minestom-snapshots:1_20_5-b04ef5189f")
+    compileOnly "net.minestom:minestom-snapshots:1c528d8ae2"
 
     // testing
     testImplementation project(":common")

@@ -39,10 +39,10 @@ public final class MinestomServer {
         LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
                 .commands(true)
                 .contextProvider(new DummyContextProvider())
-                .configurationAdapter(plugin -> new MultiConfigurationAdapter(plugin, List.of(
+                .configurationAdapter(plugin -> new MultiConfigurationAdapter(plugin,
                         new EnvironmentVariableConfigAdapter(plugin),
                         new HoconConfigurationAdapter(plugin)
-                ))).permissionSuggestions("test.permission", "test.other")
+                )).permissionSuggestions("test.permission", "test.other")
                 .dependencyManager(true)
                 .enable();
 
