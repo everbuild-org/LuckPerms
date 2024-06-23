@@ -30,9 +30,7 @@ public final class DimensionTypeContextProvider implements ContextProvider {
 
     @Override
     public @NotNull Set<String> potentialValues() {
-        return MinecraftServer.getDimensionTypeRegistry().values().stream()
-                .map((d) -> d.namespace().value())
-                .collect(Collectors.toSet());
+        return Set.of(); // todo: wait for Minestom to add a way to get all keys
     }
 
     @Override
