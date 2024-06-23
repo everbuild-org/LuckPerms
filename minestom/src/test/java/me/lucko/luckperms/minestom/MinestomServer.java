@@ -3,7 +3,6 @@ package me.lucko.luckperms.minestom;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter;
 import me.lucko.luckperms.common.config.generic.adapter.MultiConfigurationAdapter;
 import net.kyori.adventure.text.Component;
@@ -30,7 +29,7 @@ import net.minestom.server.network.ConnectionManager;
 
 public final class MinestomServer {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("LU15");
 
