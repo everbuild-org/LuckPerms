@@ -51,9 +51,11 @@ public final class LuckPermsMinestom {
         /**
          * Sets the command registry handler where LuckPerms commands
          * should be registered. Provided constructors are:
+         * <ul>
          * <li>{@link Builder#commandRegistry(Consumer, Consumer)}</li>
          * <li>{@link CommandRegistry#of(Consumer, Consumer)}</li>
          * <li>{@link CommandRegistry#minestom()}</li>
+         * </ul>
          *
          * @param handler the command registry handler
          * @return the builder instance
@@ -123,10 +125,12 @@ public final class LuckPermsMinestom {
 
         /**
          * Sets the configuration adapter to use. Provided options are:
+         * <ul>
          * <li>{@link me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter}</li>
          * <li>{@link me.lucko.luckperms.common.config.generic.adapter.MultiConfigurationAdapter}</li>
          * <li>{@link me.lucko.luckperms.common.config.generic.adapter.SystemPropertyConfigAdapter}</li>
          * <li>{@link me.lucko.luckperms.common.config.generic.adapter.ConfigurateConfigAdapter}</li>
+         * </ul>
          *
          * @param adapter the adapter to use
          * @return the builder instance
