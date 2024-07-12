@@ -168,7 +168,7 @@ public final class LuckPermsMinestom {
         private final @NotNull Set<String> permissionSuggestions = new HashSet<>();
 
         private final Path dataDirectory;
-        private @Nullable CommandRegistry commandRegistry = CommandRegistry.minestom();
+        private @Nullable CommandRegistry commandRegistry;
         private @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter = EnvironmentVariableConfigAdapter::new;
         private boolean dependencyManager = false;
         private @NotNull Logger logger = LoggerFactory.getLogger(LuckPermsMinestom.class);
