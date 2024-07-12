@@ -36,7 +36,7 @@ public final class MinestomServer {
         // initialize LuckPerms
         Path directory = Path.of("luckperms");
         LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
-                .commands(true)
+                .commandRegistry(CommandRegistry.minestom())
                 .contextProvider(new DummyContextProvider())
                 .configurationAdapter(plugin -> new MultiConfigurationAdapter(plugin,
                         new EnvironmentVariableConfigAdapter(plugin),
@@ -79,7 +79,7 @@ public final class MinestomServer {
                             //.expiry(10, TimeUnit.SECONDS)
                             .context(
                                     ImmutableContextSet.builder()
-                                            .add(DefaultContextKeys.DIMENSION_TYPE_KEY, "overworld")
+                                            .add(DefaultContextKeys.DIMENSION_TYPE_KEY, "minecraft:overworld")
                                             .add("dummy", "true")
                                             .build()
                             ).build(),
@@ -89,7 +89,7 @@ public final class MinestomServer {
 
         // command to check if a player has a permission
         CommandManager commandManager = MinecraftServer.getCommandManager();
-        Command command = new Command("permission");
+        Command command = new Command("test");
         ArgumentString permissionArgument = ArgumentType.String("permission");
         command.addSyntax((sender, context) -> {
             String permission = context.get(permissionArgument);

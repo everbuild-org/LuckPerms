@@ -47,10 +47,11 @@ public final class ExamplePlayer extends Player {
     }
 
     /**
-     * Adds a permission to the player. This method is deprecated as
-     * the {@link Permission} object is not used in the LuckPerms
-     * implementation and does not return a future.
+     * Adds a permission to the player.
+     *
      * @param permission the permission to add
+     * @deprecated the {@link Permission} object is not used in the LuckPerms
+     * implementation and does not return a future
      */
     @Deprecated
     @Override
@@ -65,6 +66,7 @@ public final class ExamplePlayer extends Player {
      * Adds a permission to the player. You may choose not to implement
      * this method on a production server, and leave permission management
      * to the LuckPerms web interface or in-game commands.
+     *
      * @param permission the permission to add
      * @return the result of the operation
      */
@@ -80,6 +82,7 @@ public final class ExamplePlayer extends Player {
      * You may choose not to implement this method on a production server, and
      * leave permission management to the LuckPerms web interface or in-game
      * commands.
+     *
      * @param permission the permission to set
      * @param value the value of the permission
      * @return the result of the operation
@@ -93,9 +96,10 @@ public final class ExamplePlayer extends Player {
     }
 
     /**
-     * Removes a permission from the player. This method is deprecated as
-     * the {@link Permission} object is not used in the LuckPerms implementation.
+     * Removes a permission from the player.
+     *
      * @param permission the permission to remove
+     * @deprecated the {@link Permission} object is not used in the LuckPerms implementation
      */
     @Deprecated
     public void removePermission(@NotNull Permission permission) {
@@ -108,9 +112,10 @@ public final class ExamplePlayer extends Player {
     /**
      * Removes a permission from the player. You may choose not to implement
      * this method on a production server, and leave permission management
-     * to the LuckPerms web interface or in-game commands. This method is
-     * deprecated as the overridden method does not return a future.
+     * to the LuckPerms web interface or in-game commands.
+     *
      * @param permissionName the name of the permission to remove
+     * @deprecated the overridden method does not return a future
      */
     @Override
     @Deprecated
@@ -124,6 +129,7 @@ public final class ExamplePlayer extends Player {
      * Removes a permission from the player. You may choose not to implement
      * this method on a production server, and leave permission management
      * to the LuckPerms web interface or in-game commands.
+     *
      * @param permissionName the name of the permission to remove
      * @param ignored ignored parameter to differentiate from the overridden method
      */
@@ -134,10 +140,11 @@ public final class ExamplePlayer extends Player {
     }
 
     /**
-     * Checks if the player has a permission. This method is deprecated as
-     * the {@link Permission} object is not used in the LuckPerms implementation.
+     * Checks if the player has a permission.
+     *
      * @param permission the permission to check
      * @return true if the player has the permission
+     * @deprecated the {@link Permission} object is not used in the LuckPerms implementation
      */
     @Deprecated
     @Override
@@ -146,10 +153,11 @@ public final class ExamplePlayer extends Player {
     }
 
     /**
-     * Gets a permission from the player. This method is deprecated as
-     * the {@link Permission} object is not used in the LuckPerms implementation.
+     * Gets a permission from the player.
+     *
      * @param permissionName the name of the permission to check
      * @return the permission if the player has it, or null if not
+     * @deprecated the {@link Permission} object is not used in the LuckPerms implementation
      */
     @Deprecated
     @Override
@@ -159,12 +167,13 @@ public final class ExamplePlayer extends Player {
     }
 
     /**
-     * Checks if the player has a permission. This method is deprecated as
-     * the {@link PermissionVerifier} interface checks for NBT data, which is not
-     * used in the LuckPerms implementation.
+     * Checks if the player has a permission.
+     *
      * @param permissionName the name of the permission to check
      * @param permissionVerifier the permission verifier, unused
      * @return true if the player has the permission
+     * @deprecated the {@link PermissionVerifier} interface checks for NBT data, which is not
+     * used in the LuckPerms implementation
      */
     @Deprecated
     @Override
@@ -174,6 +183,7 @@ public final class ExamplePlayer extends Player {
 
     /**
      * Checks if the player has a permission.
+     *
      * @param permissionName the name of the permission to check
      * @return true if the player has the permission
      */
@@ -186,6 +196,7 @@ public final class ExamplePlayer extends Player {
      * Gets the value of a permission. This passes a {@link Tristate} value
      * straight from LuckPerms, which may be a better option than using
      * boolean values in some cases.
+     *
      * @param permissionName the name of the permission to check
      * @return the value of the permission
      */
@@ -198,6 +209,7 @@ public final class ExamplePlayer extends Player {
      * Gets the prefix of the player. This method uses the MiniMessage library
      * to parse the prefix, which is a more advanced option than using legacy
      * chat formatting.
+     *
      * @return the prefix of the player
      */
     public @NotNull Component getPrefix() {
@@ -210,6 +222,7 @@ public final class ExamplePlayer extends Player {
      * Gets the suffix of the player. This method uses the MiniMessage library
      * to parse the suffix, which is a more advanced option than using legacy
      * chat formatting.
+     *
      * @return the suffix of the player
      */
     public @NotNull Component getSuffix() {

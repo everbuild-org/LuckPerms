@@ -4,13 +4,16 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
 import me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter;
 import me.lucko.luckperms.minestom.context.ContextProvider;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import net.minestom.server.command.builder.Command;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,16 +35,45 @@ public final class LuckPermsMinestom {
     }
 
     public interface Builder {
+
         /**
          * Sets whether the LuckPerms commands should be registered
+         *
          * @param enabled if the commands should be registered
          * @return the builder instance
+         * @deprecated use {@link Builder#commandRegistry(CommandRegistry)}
          */
-        @NotNull Builder commands(boolean enabled);
+        @Deprecated
+        default @NotNull Builder commands(boolean enabled) {
+            return enabled ? this.commandRegistry(CommandRegistry.minestom()) : this.commandRegistry(null);
+        }
 
+        /**
+         * Sets the command registry handler where LuckPerms commands
+         * should be registered. Provided constructors are:
+         * <li>{@link Builder#commandRegistry(Consumer, Consumer)}</li>
+         * <li>{@link CommandRegistry#of(Consumer, Consumer)}</li>
+         * <li>{@link CommandRegistry#minestom()}</li>
+         *
+         * @param handler the command registry handler
+         * @return the builder instance
+         */
+        @NotNull Builder commandRegistry(@Nullable CommandRegistry handler);
+
+        /**
+         * Sets the command registry handler where LuckPerms commands
+         * should be registered.
+         */
+        default @NotNull Builder commandRegistry(
+                @NotNull Consumer<Command> register,
+                @NotNull Consumer<Command> unregister
+        ) {
+            return this.commandRegistry(CommandRegistry.of(register, unregister));
+        }
 
         /**
          * Adds a context provider to the platform
+         *
          * @param provider the provider to add
          * @return the builder instance
          */
@@ -49,6 +81,7 @@ public final class LuckPermsMinestom {
 
         /**
          * Adds a collection of context providers to the platform
+         *
          * @param providers the providers to add
          * @return the builder instance
          */
@@ -56,6 +89,7 @@ public final class LuckPermsMinestom {
 
         /**
          * Adds a collection of context providers to the platform
+         *
          * @param providers the providers to add
          * @return the builder instance
          */
@@ -64,6 +98,7 @@ public final class LuckPermsMinestom {
 
         /**
          * Suggests a permission to be registered with the platform
+         *
          * @param permission the permission to suggest
          * @return the builder instance
          */
@@ -71,6 +106,7 @@ public final class LuckPermsMinestom {
 
         /**
          * Suggests a collection of permissions to be registered with the platform
+         *
          * @param permissions the permissions to suggest
          * @return the builder instance
          */
@@ -78,6 +114,7 @@ public final class LuckPermsMinestom {
 
         /**
          * Suggests a collection of permissions to be registered with the platform
+         *
          * @param permissions the permissions to suggest
          * @return the builder instance
          */
@@ -86,10 +123,11 @@ public final class LuckPermsMinestom {
 
         /**
          * Sets the configuration adapter to use. Provided options are:
-         * - {@link me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter}
-         * - {@link me.lucko.luckperms.common.config.generic.adapter.MultiConfigurationAdapter}
-         * - {@link me.lucko.luckperms.common.config.generic.adapter.SystemPropertyConfigAdapter}
-         * - {@link me.lucko.luckperms.common.config.generic.adapter.ConfigurateConfigAdapter}
+         * <li>{@link me.lucko.luckperms.common.config.generic.adapter.EnvironmentVariableConfigAdapter}</li>
+         * <li>{@link me.lucko.luckperms.common.config.generic.adapter.MultiConfigurationAdapter}</li>
+         * <li>{@link me.lucko.luckperms.common.config.generic.adapter.SystemPropertyConfigAdapter}</li>
+         * <li>{@link me.lucko.luckperms.common.config.generic.adapter.ConfigurateConfigAdapter}</li>
+         *
          * @param adapter the adapter to use
          * @return the builder instance
          */
@@ -99,6 +137,7 @@ public final class LuckPermsMinestom {
         /**
          * Enables the dependency manager, which will automatically download and load LuckPerms dependencies
          * during runtime.
+         *
          * @param enabled if the dependency manager should be enabled
          * @return the builder instance
          */
@@ -107,6 +146,7 @@ public final class LuckPermsMinestom {
 
         /**
          * Sets the logger to use
+         *
          * @param logger the logger to use
          * @return the builder instance
          */
@@ -115,17 +155,20 @@ public final class LuckPermsMinestom {
 
         /**
          * Enables LuckPerms
+         *
          * @return the LuckPerms instance
          */
         @NotNull LuckPerms enable();
+
     }
 
     private static class BuilderImpl implements Builder {
+
         private final @NotNull Set<ContextProvider> contextProviders = new HashSet<>();
         private final @NotNull Set<String> permissionSuggestions = new HashSet<>();
 
         private final Path dataDirectory;
-        private boolean commands = true;
+        private @Nullable CommandRegistry commandRegistry = CommandRegistry.minestom();
         private @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter = EnvironmentVariableConfigAdapter::new;
         private boolean dependencyManager = false;
         private @NotNull Logger logger = LoggerFactory.getLogger(LuckPermsMinestom.class);
@@ -135,8 +178,8 @@ public final class LuckPermsMinestom {
         }
 
         @Override
-        public @NotNull Builder commands(boolean enabled) {
-            this.commands = enabled;
+        public @NotNull Builder commandRegistry(@Nullable CommandRegistry handler) {
+            this.commandRegistry = handler;
             return this;
         }
 
@@ -194,10 +237,19 @@ public final class LuckPermsMinestom {
 
         @Override
         public @NotNull LuckPerms enable() {
-            bootstrap = new LPMinestomBootstrap(this.logger, this.dataDirectory, this.contextProviders, this.configurationAdapter, this.dependencyManager, this.permissionSuggestions, this.commands);
+            bootstrap = new LPMinestomBootstrap(
+                    this.logger,
+                    this.dataDirectory,
+                    this.contextProviders,
+                    this.configurationAdapter,
+                    this.dependencyManager,
+                    this.permissionSuggestions,
+                    this.commandRegistry
+            );
             bootstrap.onEnable();
             return LuckPermsProvider.get();
         }
+
     }
 
 }

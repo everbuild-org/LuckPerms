@@ -43,6 +43,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
 
@@ -51,9 +52,9 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private final LPMinestomBootstrap bootstrap;
     private final Set<ContextProvider> contextProviders;
     private final @NotNull Set<String> permissionSuggestions;
-    private final boolean commands;
     private final @NotNull ConfigurationAdapter configurationAdapter;
     private final @NotNull DependencyManager dependencyManager;
+    private final @Nullable CommandRegistry commandRegistry;
 
     private MinestomSenderFactory senderFactory;
     private MinestomContextManager contextManager;
@@ -63,13 +64,20 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
     private MinestomCommandExecutor commandManager;
     private MinestomConnectionListener connectionListener;
 
-    LPMinestomPlugin(@NotNull LPMinestomBootstrap bootstrap, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter, boolean dependencyManager, @NotNull Set<String> permissionSuggestions, boolean commands) {
+    LPMinestomPlugin(
+            @NotNull LPMinestomBootstrap bootstrap,
+            @NotNull Set<ContextProvider> contextProviders,
+            @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter,
+            boolean dependencyManager,
+            @NotNull Set<String> permissionSuggestions,
+            @Nullable CommandRegistry commandRegistry
+    ) {
         this.bootstrap = bootstrap;
         this.contextProviders = contextProviders;
         this.permissionSuggestions = permissionSuggestions;
-        this.commands = commands;
         this.configurationAdapter = configurationAdapter.apply(this);
         this.dependencyManager = dependencyManager ? new DependencyManagerImpl(this) : new NoopDependencyManager();
+        this.commandRegistry = commandRegistry;
     }
 
     @Override
@@ -95,8 +103,8 @@ public final class LPMinestomPlugin extends AbstractLuckPermsPlugin {
 
     @Override
     protected void registerCommands() {
-        if (commands) {
-            this.commandManager = new MinestomCommandExecutor(this);
+        if (this.commandRegistry != null) {
+            this.commandManager = new MinestomCommandExecutor(this, this.commandRegistry);
             this.commandManager.register();
         }
     }

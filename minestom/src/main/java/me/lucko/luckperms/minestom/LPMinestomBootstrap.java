@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
+import me.lucko.luckperms.common.command.CommandManager;
 import me.lucko.luckperms.common.config.generic.adapter.ConfigurationAdapter;
 import me.lucko.luckperms.common.plugin.bootstrap.LuckPermsBootstrap;
 import me.lucko.luckperms.common.plugin.classpath.ClassPathAppender;
@@ -20,6 +21,7 @@ import net.luckperms.api.platform.Platform;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public final class LPMinestomBootstrap implements LuckPermsBootstrap {
@@ -35,12 +37,20 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
 
     private Instant startTime;
 
-    public LPMinestomBootstrap(Logger logger, Path dataDirectory, @NotNull Set<ContextProvider> contextProviders, @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter, boolean dependencyManager, @NotNull Set<String> permissionSuggestions, boolean commands) {
+    public LPMinestomBootstrap(
+            @NotNull Logger logger,
+            @NotNull Path dataDirectory,
+            @NotNull Set<ContextProvider> contextProviders,
+            @NotNull Function<LPMinestomPlugin, ConfigurationAdapter> configurationAdapter,
+            boolean dependencyManager,
+            @NotNull Set<String> permissionSuggestions,
+            @Nullable CommandRegistry commandRegistry
+    ) {
         this.logger = new Slf4jPluginLogger(logger);
         this.dataDirectory = dataDirectory;
         this.schedulerAdapter = new MinestomSchedulerAdapter(this);
         this.classPathAppender = new NoopClassPathAppender();
-        this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, dependencyManager, permissionSuggestions, commands);
+        this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, dependencyManager, permissionSuggestions, commandRegistry);
     }
 
     public void onEnable() {
