@@ -4,7 +4,7 @@
 ```kts
 repositories {
     mavenCentral()
-    maven("https://repo.hypera.dev/")
+    maven("https://repo.hypera.dev/snapshots")
 }
 
 dependencies {
