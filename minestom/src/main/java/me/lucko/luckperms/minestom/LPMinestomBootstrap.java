@@ -51,6 +51,11 @@ public final class LPMinestomBootstrap implements LuckPermsBootstrap {
         this.schedulerAdapter = new MinestomSchedulerAdapter(this);
         this.classPathAppender = new NoopClassPathAppender();
         this.plugin = new LPMinestomPlugin(this, contextProviders, configurationAdapter, dependencyManager, permissionSuggestions, commandRegistry);
+
+        // we're about to move to a new artifact, we should warn the user
+        this.logger.warn("This is the final version of LuckPerms for Minestom on this artifact.");
+        this.logger.warn("Please consider moving to the new 'dev.lu15:luckperms-minestom' artifact published on both Hypera and Central repositories.");
+        this.logger.warn("This artifact will no longer be updated.");
     }
 
     public void onEnable() {
