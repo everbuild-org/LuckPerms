@@ -23,43 +23,39 @@
  *  SOFTWARE.
  */
 
-package me.lucko.luckperms.forge.util;
+package me.lucko.luckperms.neoforge.util;
 
-import me.lucko.luckperms.forge.LPForgePlugin;
+import me.lucko.luckperms.neoforge.LPNeoForgePlugin;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.server.network.ConfigurationTask;
-import net.minecraftforge.network.config.ConfigurationTaskContext;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class AsyncConfigurationTask implements ConfigurationTask {
-    private final LPForgePlugin plugin;
+    private final LPNeoForgePlugin plugin;
     private final Type type;
     private final Runnable task;
+    private final ServerConfigurationPacketListener listener;
 
-    public AsyncConfigurationTask(LPForgePlugin plugin, Type type, Runnable task) {
+    public AsyncConfigurationTask(LPNeoForgePlugin plugin, Type type, Runnable task, ServerConfigurationPacketListener listener) {
         this.plugin = plugin;
         this.type = type;
         this.task = task;
+        this.listener = listener;
     }
 
     @Override
-    public void start(ConfigurationTaskContext ctx) {
+    public void start(Consumer<Packet<?>> send) {
         CompletableFuture<Void> future = CompletableFuture.runAsync(this.task, this.plugin.getBootstrap().getScheduler().async());
         future.whenCompleteAsync((o, e) -> {
             if (e != null) {
                 this.plugin.getLogger().warn("Configuration task threw an exception", e);
             }
-            ctx.finish(this.type);
+            this.listener.finishCurrentTask(this.type);
         });
-    }
-
-    @Override
-    public void start(Consumer<Packet<?>> send) {
-        throw new IllegalStateException("This should never be called");
     }
 
     @Override

@@ -23,7 +23,7 @@
  *  SOFTWARE.
  */
 
-package me.lucko.luckperms.forge.listeners;
+package me.lucko.luckperms.neoforge.listeners;
 
 import com.mojang.authlib.GameProfile;
 import me.lucko.luckperms.common.config.ConfigKeys;
@@ -31,10 +31,10 @@ import me.lucko.luckperms.common.locale.Message;
 import me.lucko.luckperms.common.locale.TranslationManager;
 import me.lucko.luckperms.common.model.User;
 import me.lucko.luckperms.common.plugin.util.AbstractConnectionListener;
-import me.lucko.luckperms.forge.ForgeSenderFactory;
-import me.lucko.luckperms.forge.LPForgePlugin;
-import me.lucko.luckperms.forge.capabilities.UserCapabilityImpl;
-import me.lucko.luckperms.forge.util.AsyncConfigurationTask;
+import me.lucko.luckperms.neoforge.NeoForgeSenderFactory;
+import me.lucko.luckperms.neoforge.LPNeoForgePlugin;
+import me.lucko.luckperms.neoforge.capabilities.UserCapabilityImpl;
+import me.lucko.luckperms.neoforge.util.AsyncConfigurationTask;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketListener;
@@ -42,28 +42,27 @@ import net.minecraft.network.protocol.login.ClientboundLoginDisconnectPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.event.network.GatherLoginConfigurationTasksEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 
-public class ForgeConnectionListener extends AbstractConnectionListener {
+public class NeoForgeConnectionListener extends AbstractConnectionListener {
     private static final ConfigurationTask.Type USER_LOGIN_TASK_TYPE = new ConfigurationTask.Type("luckperms:user_login");
 
-    private final LPForgePlugin plugin;
+    private final LPNeoForgePlugin plugin;
 
-    public ForgeConnectionListener(LPForgePlugin plugin) {
+    public NeoForgeConnectionListener(LPNeoForgePlugin plugin) {
         super(plugin);
         this.plugin = plugin;
     }
 
     @SubscribeEvent
-    public void onGatherLoginConfigurationTasks(GatherLoginConfigurationTasksEvent event) {
-        PacketListener packetListener = event.getConnection().getPacketListener();
+    public void onGatherLoginConfigurationTasks(RegisterConfigurationTasksEvent event) {
+        PacketListener packetListener = event.getListener();
         if (!(packetListener instanceof ServerConfigurationPacketListenerImpl)) {
             return;
         }
@@ -83,9 +82,10 @@ public class ForgeConnectionListener extends AbstractConnectionListener {
         AsyncConfigurationTask task = new AsyncConfigurationTask(
                 this.plugin,
                 USER_LOGIN_TASK_TYPE,
-                () -> onPlayerNegotiationAsync(event.getConnection(), uniqueId, username)
+                () -> onPlayerNegotiationAsync(event.getListener().getConnection(), uniqueId, username),
+                event.getListener()
         );
-        event.addTask(task);
+        event.register(task);
     }
 
     private void onPlayerNegotiationAsync(Connection connection, UUID uniqueId, String username) {
@@ -111,15 +111,15 @@ public class ForgeConnectionListener extends AbstractConnectionListener {
 
             if (this.plugin.getConfiguration().get(ConfigKeys.CANCEL_FAILED_LOGINS)) {
                 Component component = TranslationManager.render(Message.LOADING_DATABASE_ERROR.build());
-                connection.send(new ClientboundLoginDisconnectPacket(ForgeSenderFactory.toNativeText(component)));
-                connection.disconnect(ForgeSenderFactory.toNativeText(component));
+                connection.send(new ClientboundLoginDisconnectPacket(NeoForgeSenderFactory.toNativeText(component)));
+                connection.disconnect(NeoForgeSenderFactory.toNativeText(component));
                 this.plugin.getEventDispatcher().dispatchPlayerLoginProcess(uniqueId, username, null);
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         GameProfile profile = player.getGameProfile();
 
@@ -140,10 +140,10 @@ public class ForgeConnectionListener extends AbstractConnectionListener {
 
             Component component = TranslationManager.render(Message.LOADING_STATE_ERROR.build(), player.getLanguage());
             if (this.plugin.getConfiguration().get(ConfigKeys.CANCEL_FAILED_LOGINS)) {
-                player.connection.disconnect(ForgeSenderFactory.toNativeText(component));
+                player.connection.disconnect(NeoForgeSenderFactory.toNativeText(component));
                 return;
             } else {
-                player.sendSystemMessage(ForgeSenderFactory.toNativeText(component));
+                player.sendSystemMessage(NeoForgeSenderFactory.toNativeText(component));
             }
         }
 
