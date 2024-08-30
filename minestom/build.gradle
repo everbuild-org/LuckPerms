@@ -52,11 +52,6 @@ publishing {
             url = 'https://repo.hypera.dev/snapshots/'
             credentials(PasswordCredentials)
         }
-        maven {
-            name = 'sonatype'
-            url = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-            credentials(PasswordCredentials)
-        }
     }
 
     publications {

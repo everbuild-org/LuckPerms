@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.licenser) apply false
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -83,5 +84,16 @@ subprojects {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         maven { url 'https://repo.lucko.me/' }
         maven { url 'https://libraries.minecraft.net/' }
+    }
+}
+
+nexusPublishing {
+    useStaging.set(true)
+
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
     }
 }
