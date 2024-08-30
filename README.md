@@ -4,18 +4,17 @@
 ```kts
 repositories {
     mavenCentral()
-    maven("https://repo.hypera.dev/snapshots")
 }
 
 dependencies {
-    implementation("me.lucko.luckperms:minestom:5.4-SNAPSHOT")
+    implementation("dev.lu15:luckperms-minestom:5.4-SNAPSHOT")
 }
 ```
 
 ```java
 Path directory = Path.of("luckperms");
 LuckPerms luckPerms = LuckPermsMinestom.builder(directory)
-        .commands(true) // enables registration of LuckPerms commands
+        .commandRegistry(CommandRegistry.minestom()) // enables registration of LuckPerms commands
         .contextProvider(new DummyContextProvider()) // provide additional custom contexts
         .configurationAdapter(plugin -> new MultiConfigurationAdapter(plugin, // define the configuration
                 new EnvironmentVariableConfigAdapter(plugin), // use MultiConfigurationAdapter to load from multiple sources, in order

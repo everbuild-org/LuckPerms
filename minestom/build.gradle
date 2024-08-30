@@ -49,14 +49,19 @@ publishing {
     repositories {
         maven {
             name = 'hyperaSnapshots'
-            url = 'https://repo.hypera.dev/snapshots'
+            url = 'https://repo.hypera.dev/snapshots/'
+            credentials(PasswordCredentials)
+        }
+        maven {
+            name = 'sonatype'
+            url = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
             credentials(PasswordCredentials)
         }
     }
 
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'minestom'
+            artifactId = 'luckperms-minestom'
 
             from components.java
 
@@ -100,4 +105,12 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    def signingKeyId = findProperty("signingKeyId") as String
+    def signingKey = findProperty("signingKey") as String
+    def signingPassword = findProperty("signingPassword") as String
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign publishing.publications.mavenJava
 }

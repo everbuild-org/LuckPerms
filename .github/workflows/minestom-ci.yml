@@ -6,6 +6,11 @@ on:
 
 concurrency: "gradle-snapshot-${{ github.ref }}"
 
+env:
+  ORG_GRADLE_PROJECT_signingKeyId: "${{ secrets.SIGNING_KEY_ID }}"
+  ORG_GRADLE_PROJECT_signingKey: "${{ secrets.SIGNING_KEY }}"
+  ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.SIGNING_PASSWORD }}"
+
 jobs:
   snapshot:
     name: "Snapshot"
@@ -15,3 +20,5 @@ jobs:
     secrets:
       HYPERA_SNAPSHOTS_USERNAME: "${{ secrets.HYPERA_SNAPSHOTS_USERNAME }}"
       HYPERA_SNAPSHOTS_PASSWORD: "${{ secrets.HYPERA_SNAPSHOTS_PASSWORD }}"
+      SONATYPE_USERNAME: "${{ secrets.SONATYPE_USERNAME }}"
+      SONATYPE_PASSWORD: "${{ secrets.SONATYPE_PASSWORD }}"
