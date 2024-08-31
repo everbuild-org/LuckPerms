@@ -45,10 +45,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -166,10 +163,9 @@ public class FileActionLogger {
     }
 
     public LogPage getLogPage(FilterList<Action> filters, @Nullable PageParameters page) throws IOException {
-        List<LoggedAction> filtered = loadLog(filters)
-                .sorted(Comparator.comparing(LoggedAction::getTimestamp))
-                .collect(Collectors.toList())
-                .reversed();
+        List<LoggedAction> filtered = new ArrayList<>(loadLog(filters)
+                .sorted(Comparator.comparing(LoggedAction::getTimestamp)).toList());
+        Collections.reverse(filtered);
 
         int size = filtered.size();
         List<LoggedAction> paginated = page != null ? page.paginate(filtered) : filtered;

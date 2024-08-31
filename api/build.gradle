@@ -113,8 +113,8 @@ java {
 publishing {
     repositories {
         maven {
-            name = 'hyperaSnapshots'
-            url = 'https://repo.hypera.dev/snapshots/'
+            name = 'everbuild'
+            url = 'https://repo.celestia.everbuild.org/public'
             credentials(PasswordCredentials)
         }
     }
@@ -159,12 +159,4 @@ publishing {
             }
         }
     }
-}
-
-signing {
-    def signingId = findProperty("signingId") as String
-    def signingKey = findProperty("signingKey") as String
-    def signingPassword = findProperty("signingPassword") as String
-    useInMemoryPgpKeys(signingId, signingKey, signingPassword)
-    sign publishing.publications.mavenJava
 }

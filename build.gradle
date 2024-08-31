@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.licenser) apply false
+//    alias(libs.plugins.licenser) apply false
     id("com.gradleup.nmcp") version("0.0.9") apply false
 }
 
@@ -15,7 +15,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    apply plugin: 'org.cadixdev.licenser'
+//    apply plugin: 'org.cadixdev.licenser'
     apply plugin: 'com.gradleup.nmcp'
 
     group = 'dev.lu15'
@@ -74,11 +74,11 @@ subprojects {
     project.ext.apiVersion = project.ext.majorVersion + '.' + project.ext.minorVersion
     project.ext.fullVersion = project.ext.apiVersion + '.' + project.ext.patchVersion
 
-    license {
-        header = rootProject.file('HEADER.txt')
-        include '**/*.java'
-        newLine = true
-    }
+//    license {
+//        header = rootProject.file('HEADER.txt')
+//        include '**/*.java'
+//        newLine = true
+//    }
 
     repositories {
         // Fix issue with lwjgl-freetype not being found on macOS / ForgeGradle issue
